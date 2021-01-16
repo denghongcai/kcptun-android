@@ -14,7 +14,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}
       - run:
           name: Run Build and Tests
-          command: ./gradlew --debug assembleDebug check
+          command: ./gradlew --info assembleDebug check
       - save_cache:
           paths:
             - ~/.gradle
