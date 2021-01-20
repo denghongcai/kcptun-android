@@ -14,7 +14,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}
       - run:
           name: Run Build and Tests
-          command: ./gradlew --info assembleDebug check
+          command: ./gradlew --info assemble check
       - save_cache:
           paths:
             - ~/.gradle
@@ -26,3 +26,15 @@ jobs:
       - store_artifacts:
           path: app/build/reports
           destination: reports
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=1.0.2
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/app/build/outputs/apk
